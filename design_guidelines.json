@@ -1,0 +1,191 @@
+{
+  "app_name": "mTree",
+  "personality": "6 Glass / Luxe DARK",
+  "personality_one_liner": "A deep, mystical, and premium spiritual discipline experience driven by glowing golden accents, 60fps cinematic motion, and an ink-dark obsidian void.",
+  "color": {
+    "surface": "#05050C",
+    "onSurface": "#FDFBF7",
+    "surfaceSecondary": "#0F0F1A",
+    "onSurfaceSecondary": "#B3B3C2",
+    "surfaceTertiary": "#1A1A2E",
+    "onSurfaceTertiary": "#8F8F9D",
+    "surfaceInverse": "#FDFBF7",
+    "onSurfaceInverse": "#05050C",
+    "brand": "#F5C542",
+    "brandPrimary": "#F5C542",
+    "onBrandPrimary": "#05050C",
+    "brandSecondary": "#D4AF37",
+    "onBrandSecondary": "#05050C",
+    "brandTertiary": "rgba(245, 197, 66, 0.15)",
+    "onBrandTertiary": "#F5C542",
+    "success": "#10B981",
+    "onSuccess": "#000000",
+    "warning": "#FFB020",
+    "onWarning": "#000000",
+    "error": "#FF4D4D",
+    "onError": "#FFFFFF",
+    "info": "#00E5FF",
+    "onInfo": "#000000",
+    "border": "rgba(245, 197, 66, 0.1)",
+    "borderStrong": "rgba(245, 197, 66, 0.35)",
+    "divider": "rgba(253, 251, 247, 0.08)"
+  },
+  "typography": {
+    "displayFontFamily": "Outfit",
+    "textFontFamily": "Outfit",
+    "scale": {
+      "sm": 12,
+      "base": 14,
+      "lg": 16,
+      "xl": 20,
+      "2xl": 24
+    }
+  },
+  "spacing": {
+    "rule": "Generous and cinematic. Use large paddings to make the glowing gold elements and sacred texts stand out. No crowded views.",
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "2xl": 32,
+    "3xl": 48
+  },
+  "radius_tokens": {
+    "sm": 6,
+    "md": 12,
+    "lg": 20,
+    "pill": 999
+  },
+  "shadow_tier": "2",
+  "navigation": "bottom_tabs",
+  "icon_set": "Phosphor",
+  "glassmorphism": {
+    "enabled": true,
+    "do's": [
+      "Use dark frosted glass (`rgba(15, 15, 26, 0.7)` + blur) for the floating pill bottom tab bar.",
+      "Use glass overlays for the home header card and community wall expansion cards.",
+      "Apply a subtle gold tint `rgba(245, 197, 66, 0.05)` to elevated modal glass surfaces."
+    ],
+    "dont's": [
+      "Don't stack glass on glass.",
+      "Don't blur dense input forms in the Journey Setup wizard.",
+      "Don't use glass without a translucent base color to ensure text contrast."
+    ]
+  },
+  "platform_libraries": {
+    "glass": {
+      "ios": "expo-glass-effect",
+      "android": "expo-blur",
+      "low_end_android_fallback": "solid surfaceSecondary"
+    },
+    "image": "expo-image",
+    "blur": "expo-blur",
+    "bottom_sheet": "@gorhom/bottom-sheet",
+    "animation": "react-native-reanimated",
+    "gesture": "react-native-gesture-handler"
+  },
+  "screens": [
+    {
+      "name": "Splash",
+      "purpose": "A cinematic entry into the spiritual app, establishing the premium dark/gold mood.",
+      "states": {
+        "loading": "Full bleed glowing tree background with dark bottom scrim. App logo glowing softly in the center.",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Full bleed image. A 3-stop vertical linear gradient scrim from transparent to #05050C at the bottom. Glowing text centered."
+    },
+    {
+      "name": "Onboarding",
+      "purpose": "Guides the user into the spiritual discipline journey with a serious, beautiful commitment flow.",
+      "states": {
+        "loading": "N/A",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Carousel of mystical scenes. Deep dark bottom sheet for the text and disclaimer. Final slide requires a 'hold-to-confirm' checkbox to accept the spiritual contract."
+    },
+    {
+      "name": "JourneySetup",
+      "purpose": "Wizard to collect Goal, Sacrifice, Burning Desire, Affirmation, and Reminders.",
+      "states": {
+        "loading": "Centered gold spinner over surface.",
+        "empty": "N/A",
+        "error": "Standard error alert with gold retry button."
+      },
+      "layout": "Vertical scroll layout. Clean un-blurred cards (surfaceSecondary) for text inputs with label above. Glowing gold continue button sticky at the bottom."
+    },
+    {
+      "name": "HomeDashboard",
+      "purpose": "The daily command center for manifestation, combining high-hierarchy sacred texts with progress and ritual initiation.",
+      "states": {
+        "loading": "Skeleton of the home cards fading smoothly.",
+        "empty": "Welcome state prompting to set up the first journey.",
+        "error": "Error message with retry button centered."
+      },
+      "layout": "Top: A redesigned glass home header card. Middle 1: 'Sacred Commitment Card' - This MUST be the most prominent UI element. Use borderStrong, a subtle gold glow, and large typography for Burning Desire, Affirmation, Sacrifice. Middle 2: Graphical notification/streak ring. Bottom: Hold-to-Start Ritual primary CTA, sitting above a glass floating pill tab bar."
+    },
+    {
+      "name": "Ritual",
+      "purpose": "A distraction-free, meditative state to execute the daily discipline.",
+      "states": {
+        "loading": "Fade-in of the breathing ring.",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Ultra-minimalist. Full dark void (surface). A massive, glowing golden hold-to-confirm ring in the center. Requires sustained press (1200ms) to complete the ritual."
+    },
+    {
+      "name": "CommunityWall",
+      "purpose": "A subdued, supportive feed of other users' manifestations without breaking the meditative mood.",
+      "states": {
+        "loading": "List of pulsing skeletons.",
+        "empty": "Illustration of a solitary glowing tree with 'Be the first to share your journey.'",
+        "error": "Retry connection card."
+      },
+      "layout": "List of minimal cards (surfaceSecondary). Tapping expands the card seamlessly (Shared Element Transition via Reanimated) to reveal the full user story and interaction buttons."
+    },
+    {
+      "name": "CelebrationCard",
+      "purpose": "A highly rewarding, visually stunning moment when a manifestation comes true.",
+      "states": {
+        "loading": "N/A",
+        "empty": "N/A",
+        "error": "N/A"
+      },
+      "layout": "Full-screen absolute modal. Background is the 'golden glowing orb'. A dark gradient scrim over it. Large typography 'Did Your Manifestation Come True?'. A hold-to-confirm button at the bottom to lock it in and record the success."
+    }
+  ],
+  "images": {
+    "mystical_tree_hero": {
+      "url": "https://images.unsplash.com/photo-1640027324842-1eae9df1d8bc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwxfHxkYXJrJTIwbXlzdGljYWwlMjBnbG93aW5nJTIwdHJlZSUyMGdvbGR8ZW58MHx8fHwxNzg2NzQzMzE2fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Dark mystical tree branches illuminated in gold"
+    },
+    "celebration_orb": {
+      "url": "https://images.unsplash.com/photo-1634703303793-e9f55865119c?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1MTN8MHwxfHNlYXJjaHwxfHxnb2xkZW4lMjBnbG93aW5nJTIwb3JiJTIwZGFyayUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzg2NzQzMzE2fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "A golden glowing textured sphere against a dark void"
+    },
+    "meditation_bg": {
+      "url": "https://images.unsplash.com/photo-1538024333176-f25f63f873ee?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2ODh8MHwxfHNlYXJjaHwyfHxkYXJrJTIwYWVzdGhldGljJTIwbWVkaXRhdGlvbiUyMGdvbGQlMjBsaWdodHN8ZW58MHx8fHwxNzg2NzQzMzE2fDA&ixlib=rb-4.1.0&q=85",
+      "alt": "Dark meditative scene with golden light"
+    }
+  },
+  "haptics": {
+    "tab_press": "light",
+    "hold_to_confirm_start": "light",
+    "hold_to_confirm_progress": "selection",
+    "hold_to_confirm_success": "heavy",
+    "community_card_expand": "medium",
+    "primary_button_press": "medium"
+  },
+  "instructions_to_main_agent": [
+    "Premium Motion requirement: You MUST use react-native-reanimated for all major interactions. 60fps butter-smooth motion is a core requirement of this overhaul.",
+    "Implement the 'Hold-to-confirm' interaction using useSharedValue and gesture handlers. When pressed, fill an SVG ring or progress bar over ~1200ms. Fire a heavy haptic on success.",
+    "The 'Sacred Commitment Card' containing Burning Desire, Affirmation, and Sacrifice must dominate the screen. Use gold typography (onBrandPrimary or brandPrimary), a subtle gold border (borderStrong), and maybe a soft drop shadow mapped to the gold token to create a 'glowing' effect.",
+    "One Unified Font: Use 'Outfit' at weight 400 and 500 across the ENTIRE app. Do not mix any other font. Keep it clean and readable.",
+    "Any image used as a background MUST have a vertical expo-linear-gradient scrim layered over it, transitioning from transparent to #05050C at the bottom (>=70% opacity at stop 100%) to guarantee text readability.",
+    "Floating Pill Tab Bar: Position it absolutely at the bottom, above the safe area inset. Use a glassmorphism background (`expo-blur` over `rgba(15, 15, 26, 0.7)`). Keep it slim and premium.",
+    "Use Phosphor icons. Keep them consistently styled (e.g., entirely 'regular' or 'fill' variant) matching the premium aesthetics."
+  ]
+}

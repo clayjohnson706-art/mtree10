@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>mTree · Admin</title>
+<style>
+:root{--void:#05050C;--bg:#0A0A16;--s1:#12121F;--s2:#1A1A2E;--s3:#25253C;--gold:#F5C542;--white:#FDFBF7;--g1:#B3B3C2;--g2:#67637C;--line:#2A2740;--ok:#34D399;--bad:#FF6B7A;--info:#8B95F6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:radial-gradient(1200px 600px at 50% -200px,#14122a 0%,var(--void) 60%);color:var(--white);font:14px/1.5 -apple-system,'Segoe UI',Roboto,sans-serif;min-height:100vh}
+button{cursor:pointer;font:inherit}
+input,textarea,select{font:inherit;background:var(--s2);border:1px solid var(--line);color:var(--white);border-radius:10px;padding:9px 12px;outline:none;width:100%}
+input:focus,textarea:focus{border-color:var(--gold)}
+.hidden{display:none!important}
+/* login */
+#login{min-height:100vh;display:grid;place-items:center;padding:24px}
+.loginCard{width:100%;max-width:380px;background:var(--s1);border:1px solid var(--line);border-radius:20px;padding:34px;text-align:center;box-shadow:0 30px 80px #000}
+.logo{font-size:26px;font-weight:900;letter-spacing:1px}.logo span{color:var(--gold)}
+.sub{color:var(--g1);font-size:12.5px;margin:6px 0 24px}
+.gbtn{width:100%;margin-top:14px;background:var(--gold);color:var(--void);border:none;border-radius:12px;padding:12px;font-weight:800;letter-spacing:.5px}
+.err{color:var(--bad);font-size:12.5px;margin-top:12px;min-height:16px}
+/* shell */
+header{display:flex;align-items:center;gap:16px;padding:16px 26px;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(10,10,22,.92);backdrop-filter:blur(10px);z-index:5}
+header .logo{font-size:19px}
+nav{display:flex;gap:6px;margin-left:12px}
+nav button{background:none;border:none;color:var(--g1);padding:8px 14px;border-radius:999px;font-weight:700}
+nav button.on{background:var(--gold);color:var(--void)}
+#logout{margin-left:auto;background:var(--s2);border:1px solid var(--line);color:var(--g1);border-radius:999px;padding:7px 16px}
+main{padding:26px;max-width:1180px;margin:0 auto}
+/* cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.stat{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:18px}
+.stat b{display:block;font-size:26px;color:var(--gold)}
+.stat span{color:var(--g1);font-size:11.5px;letter-spacing:.8px;text-transform:uppercase}
+.panel{background:var(--s1);border:1px solid var(--line);border-radius:16px;padding:20px;margin-top:18px}
+.panel h3{font-size:13px;letter-spacing:1.4px;text-transform:uppercase;color:var(--gold);margin-bottom:14px}
+.row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.list-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 6px;border-bottom:1px solid var(--line);cursor:pointer}
+.list-item:hover{background:#ffffff08}
+.badge{font-size:10.5px;font-weight:800;padding:3px 10px;border-radius:999px;letter-spacing:.5px}
+.b-gold{background:#f5c54222;color:var(--gold)}.b-ok{background:#34d39922;color:var(--ok)}
+.b-bad{background:#ff6b7a22;color:var(--bad)}.b-info{background:#8b95f622;color:var(--info)}.b-mut{background:#67637c22;color:var(--g1)}
+.muted{color:var(--g1);font-size:12.5px}
+.btn{background:var(--s2);border:1px solid var(--line);color:var(--white);border-radius:10px;padding:8px 14px;font-weight:700;font-size:12.5px}
+.btn.gold{background:var(--gold);color:var(--void);border-color:var(--gold)}
+.btn.danger{color:var(--bad);border-color:#ff6b7a44}
+.ticket{background:var(--s2);border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px}
+.ticket .muted{margin-top:4px;white-space:pre-wrap}
+.reply{background:#f5c54211;border-left:3px solid var(--gold);border-radius:8px;padding:10px;margin-top:10px;font-size:13px}
+.field{margin-top:12px}.field label{display:block;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--g2);margin-bottom:5px}
+.switch{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.toggle{width:46px;height:26px;border-radius:999px;background:var(--s3);border:1px solid var(--line);position:relative;transition:.2s}
+.toggle::after{content:'';position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:var(--g1);transition:.2s}
+.toggle.on{background:var(--gold)}.toggle.on::after{left:22px;background:var(--void)}
+.prices{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+#toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--void);font-weight:800;padding:11px 22px;border-radius:999px;opacity:0;transition:.25s;pointer-events:none;z-index:20}
+#toast.show{opacity:1}
+.back{background:none;border:none;color:var(--gold);font-weight:800;padding:0;margin-bottom:14px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}@media(max-width:860px){.two{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="login">
+  <div class="loginCard">
+    <div class="logo">m<span>Tree</span> Admin</div>
+    <div class="sub">Sacred command center — enter the admin password</div>
+    <input id="pw" type="password" placeholder="Admin password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="gbtn" onclick="doLogin()">Enter Dashboard</button>
+    <div class="err" id="loginError"></div>
+  </div>
+</div>
+
+<div id="shell" class="hidden">
+  <header>
+    <div class="logo">m<span>Tree</span></div>
+    <nav>
+      <button id="nav-overview" class="on" onclick="show('overview')">Overview</button>
+      <button id="nav-users" onclick="show('users')">Users</button>
+      <button id="nav-tickets" onclick="show('tickets')">Tickets</button>
+      <button id="nav-config" onclick="show('config')">Pricing &amp; Config</button>
+    </nav>
+    <button id="logout" onclick="logout()">Log out</button>
+  </header>
+  <main>
+    <section id="tab-overview"><div class="grid" id="stats"></div></section>
+
+    <section id="tab-users" class="hidden">
+      <div id="userList">
+        <div class="panel"><h3>Users</h3>
+          <input id="userSearch" placeholder="Search by name or email…" oninput="debounceUsers()">
+          <div id="users"></div>
+        </div>
+      </div>
+      <div id="userDetail" class="hidden"></div>
+    </section>
+
+    <section id="tab-tickets" class="hidden">
+      <div class="panel"><h3>Support Tickets <span class="muted">(test/dummy accounts excluded)</span></h3>
+        <div class="row" style="margin-bottom:10px">
+          <select id="ticketFilter" style="width:200px" onchange="loadTickets()">
+            <option value="">All statuses</option><option value="open">Open</option>
+            <option value="replied">Replied</option><option value="closed">Closed</option>
+          </select>
+        </div>
+        <div id="tickets"></div>
+      </div>
+    </section>
+
+    <section id="tab-config" class="hidden">
+      <div class="two">
+        <div class="panel"><h3>Feature Flags</h3><div id="flags"></div>
+          <p class="muted" style="margin-top:12px">Testing phase: keep everything OFF/free. Flip these when the app goes live on the Play Store.</p>
+        </div>
+        <div class="panel"><h3>Subscription Prices (₹)</h3>
+          <div class="prices" id="subPrices"></div>
+          <div class="field"><label>Donation prices (comma separated ₹)</label><input id="donPrices"></div>
+          <button class="btn gold" style="margin-top:16px" onclick="saveConfig()">Save Pricing &amp; Flags</button>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<div id="toast"></div>
+
+<script>
+const $=id=>document.getElementById(id);
+let token=sessionStorage.getItem('mtree_admin_token')||'';let config={};let usersTimer=null;
+const PLANS=[['first_month','First Month'],['monthly','Monthly'],['6_month','6 Months'],['yearly','Yearly']];
+const FLAGS=[['ads_enabled','Ads enabled'],['subscriptions_enabled','Subscriptions enabled'],['community_premium_required','Community requires Premium'],['donations_enabled','Donations enabled']];
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const when=s=>s?new Date(s).toLocaleString():'—';
+function toast(m){$('toast').textContent=m;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),2200)}
+async function request(path,opts={}){
+  const r=await fetch('/api'+path,{...opts,headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})}});
+  if(r.status===401){logout();throw new Error('Session expired — log in again')}
+  if(!r.ok)throw new Error((await r.json().catch(()=>({}))).detail||'Request failed');
+  return r.status===204?null:r.json();
+}
+async function doLogin(){
+  $('loginError').textContent='';
+  try{
+    const d=await request('/admin/login',{method:'POST',body:JSON.stringify({password:$('pw').value})});
+    token=d.access_token;sessionStorage.setItem('mtree_admin_token',token);boot();
+  }catch(e){$('loginError').textContent=e.message}
+}
+function logout(){token='';sessionStorage.removeItem('mtree_admin_token');$('shell').classList.add('hidden');$('login').classList.remove('hidden')}
+async function boot(){
+  try{await loadStats();$('login').classList.add('hidden');$('shell').classList.remove('hidden');
+    loadUsers();loadTickets();loadConfig();
+  }catch(e){logout();$('loginError').textContent=e.message}
+}
+function show(t){['overview','users','tickets','config'].forEach(x=>{$('tab-'+x).classList.toggle('hidden',x!==t);$('nav-'+x).classList.toggle('on',x===t)});
+  if(t==='users'){$('userList').classList.remove('hidden');$('userDetail').classList.add('hidden')}}
+async function loadStats(){
+  const s=await request('/admin/stats');
+  const items=[['Total users',s.total_users],['Premium users',s.premium_users],['Manifestations',s.total_manifestations],['Active journeys',s.active_manifestations],['Came true',s.completed_manifestations],['Wall posts',s.wall_posts],['Open tickets',s.open_tickets]];
+  $('stats').innerHTML=items.map(([l,v])=>`<div class="stat"><b>${v??0}</b><span>${l}</span></div>`).join('');
+}
+function debounceUsers(){clearTimeout(usersTimer);usersTimer=setTimeout(loadUsers,350)}
+async function loadUsers(){
+  const q=encodeURIComponent($('userSearch').value.trim());
+  const d=await request('/admin/users'+(q?`?search=${q}`:''));
+  $('users').innerHTML=(d.users||[]).map(u=>`
+    <div class="list-item" onclick="openUser('${u.user_id}')">
+      <div><b>${esc(u.name||'Unnamed')}</b><div class="muted">${esc(u.email)}</div></div>
+      <div class="row">
+        ${u.is_premium?'<span class="badge b-gold">PREMIUM</span>':''}
+        ${u.is_blocked?'<span class="badge b-bad">BLOCKED</span>':''}
+        <span class="muted">${when(u.created_at).split(',')[0]}</span>
+      </div>
+    </div>`).join('')||'<div class="muted">No users found.</div>';
+}
+function ticketHtml(t,withReply){
+  return `<div class="ticket">
+    <div class="row" style="justify-content:space-between">
+      <b>${esc(t.subject)}</b>
+      <span class="badge ${t.status==='open'?'b-info':t.status==='replied'?'b-gold':'b-mut'}">${esc(t.status).toUpperCase()}</span>
+    </div>
+    <div class="muted">${esc(t.user_email||'')} · ${when(t.created_at)}</div>
+    <div class="muted">${esc(t.description)}</div>
+    ${t.admin_reply?`<div class="reply">↳ ${esc(t.admin_reply)}<div class="muted">${when(t.admin_replied_at)}</div></div>`:''}
+    ${withReply&&t.status!=='closed'?`
+      <div class="field"><textarea id="reply-${t.id}" rows="2" placeholder="Write a reply…"></textarea></div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn gold" onclick="replyTicket('${t.id}')">Send Reply</button>
+        <button class="btn danger" onclick="closeTicket('${t.id}')">Close Ticket</button>
+      </div>`:''}
+  </div>`;
+}
+async function openUser(id){
+  const d=await request('/admin/users/'+id);const u=d.user;
+  $('userList').classList.add('hidden');$('userDetail').classList.remove('hidden');
+  $('userDetail').innerHTML=`
+    <button class="back" onclick="show('users')">← Back to users</button>
+    <div class="panel">
+      <div class="row" style="justify-content:space-between">
+        <div><b style="font-size:18px">${esc(u.name||'Unnamed')}</b><div class="muted">${esc(u.email)}</div></div>
+        <div class="row">
+          ${u.is_premium?'<span class="badge b-gold">PREMIUM</span>':'<span class="badge b-mut">FREE</span>'}
+          ${u.is_blocked?'<span class="badge b-bad">BLOCKED</span>':''}
+        </div>
+      </div>
+      <div class="row" style="margin-top:14px">
+        <button class="btn" onclick="patchUser('${u.user_id}',{is_premium:${!u.is_premium}})">${u.is_premium?'Revoke Premium':'Grant Premium'}</button>
+        ${u.is_blocked
+          ?`<button class="btn" onclick="userAction('${u.user_id}','unblock')">Unblock</button>`
+          :`<button class="btn danger" onclick="userAction('${u.user_id}','block')">Block</button>`}
+      </div>
+      <div class="row" style="margin-top:14px">
+        <span class="muted">Joined ${when(u.created_at)}</span>
+        <span class="muted">· Manifestations: ${d.manifestations.length}</span>
+        <span class="muted">· Donated: $${d.total_donated_usd}</span>
+      </div>
+    </div>
+    <div class="panel"><h3>Current Active Ticket</h3>
+      ${d.current_ticket?ticketHtml(d.current_ticket,true):'<div class="muted">No active ticket.</div>'}
+    </div>
+    <div class="panel"><h3>Ticket History</h3>
+      ${d.ticket_history.length?d.ticket_history.map(t=>ticketHtml(t,true)).join(''):'<div class="muted">No past tickets.</div>'}
+    </div>`;
+  window._lastUser=id;
+}
+async function patchUser(id,body){await request('/admin/users/'+id,{method:'PATCH',body:JSON.stringify(body)});toast('User updated');openUser(id);loadUsers()}
+async function userAction(id,a){await request(`/admin/users/${id}/${a}`,{method:'POST',body:JSON.stringify({})});toast(a==='block'?'User blocked':'User unblocked');openUser(id);loadUsers()}
+async function loadTickets(){
+  const f=$('ticketFilter').value;
+  const d=await request('/admin/tickets'+(f?`?status_filter=${f}`:''));
+  $('tickets').innerHTML=(d.items||[]).map(t=>ticketHtml(t,true)).join('')||'<div class="muted">No tickets.</div>';
+}
+async function replyTicket(id){
+  const v=$('reply-'+id).value.trim();if(!v)return toast('Write a reply first');
+  await request(`/admin/tickets/${id}/reply`,{method:'POST',body:JSON.stringify({reply:v})});
+  toast('Reply sent');loadTickets();if(window._lastUser&&!$('userDetail').classList.contains('hidden'))openUser(window._lastUser);
+}
+async function closeTicket(id){
+  await request(`/admin/tickets/${id}/close`,{method:'POST'});toast('Ticket closed');loadTickets();
+  if(window._lastUser&&!$('userDetail').classList.contains('hidden'))openUser(window._lastUser);
+}
+async function loadConfig(){
+  config=await request('/admin/config');
+  $('flags').innerHTML=FLAGS.map(([k,l])=>`
+    <div class="switch"><span>${l}</span>
+      <div class="toggle ${config[k]?'on':''}" id="flag-${k}" onclick="this.classList.toggle('on')"></div>
+    </div>`).join('');
+  $('subPrices').innerHTML=PLANS.map(([k,l])=>`
+    <div class="field"><label>${l}</label><input type="number" min="1" id="price-${k}" value="${config.subscription_prices?.[k]??''}"></div>`).join('');
+  $('donPrices').value=(config.donation_prices||[]).join(', ');
+}
+async function saveConfig(){
+  const body={subscription_prices:{},donation_prices:$('donPrices').value.split(',').map(s=>parseInt(s.trim())).filter(n=>n>0)};
+  FLAGS.forEach(([k])=>body[k]=$('flag-'+k).classList.contains('on'));
+  PLANS.forEach(([k])=>{const v=parseInt($('price-'+k).value);if(v>0)body.subscription_prices[k]=v});
+  config=await request('/admin/config',{method:'PATCH',body:JSON.stringify(body)});
+  toast('Configuration saved');loadConfig();
+}
+if(token)boot();
+</script>
+</body>
+</html>

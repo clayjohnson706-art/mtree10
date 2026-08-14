@@ -1,0 +1,38 @@
+{
+  "summary": "Backend + frontend testing for mTree UI overhaul (dark/gold theme), web admin dashboard, community-free flag, hold-to-confirm buttons, tab bar & admin-panel removal from mobile. Backend: 10/10 pytest cases PASS. Frontend (mobile viewport 390x844, dev-login token injected into localStorage.mtree_session_token): all 18 spec-features render correctly — home Sacred Commitment card, Notification Streak hub (streak-hub-card, HOLD TO MARK DONE / notification-streak-hold-done, Daily Ritual Streak row), HOLD TO START + Came True buttons, glass pill bottom tab bar with 4 tabs (tab-home / tab-ritual / tab-wall / tab-me), ritual tab combined 'Your Sacred Commitment' + HOW TO PRACTICE, community tab loads FREE with empty state (no premium lock), settings has NO settings-admin-panel testID, /admin route returns 'Unmatched Route', web admin dashboard at /api/admin-dashboard accepts MTree@Sacred#2026 and renders Overview/Users/Tickets/Pricing tabs with live stats. Admin config PATCH round-trip verified & flags restored to defaults (ads=false, subs=false, community_premium_required=false, prices reset). Deprecated packages check: none of the flagged expo-av/expo-barcode-scanner/expo-background-fetch present in package.json (verified). Minor RN-web console warnings noted (shadow*, pointerEvents deprecation).",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [
+      {"component": "HoldProgressButton (notification-streak-hold-done)", "issue": "In the web preview, simulating a 2.2s mouse-down/up over the hold button did not visibly increment the Notification Streak score (0/63 before and after). The backend endpoint /api/manifestations/{id}/notification-response is verified working via pytest (score increments +1). This is most likely a React Native Web limitation for Pressable long-press via synthetic mouse events, not a code defect — needs manual verification on Expo Go / native device.", "testID": "notification-streak-hold-done", "priority": "LOW"}
+    ],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "global", "issues": [
+        "Console warning: 'shadow*' style props are deprecated in React Native Web — main agent should migrate shadow style props to boxShadow or use platform-conditional styles.",
+        "Console warning: props.pointerEvents is deprecated — should move to style.pointerEvents."
+      ]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ui_overhaul_admin_v9.py",
+    "/app/test_reports/pytest/ui_overhaul_v9.xml"
+  ],
+  "action_items": [
+    "Manually verify hold-to-mark-done score increment on a real device or Expo Go — Playwright mouse events cannot reliably drive React Native Pressable long-press callbacks. Backend already verified working.",
+    "Migrate deprecated React Native Web style props (shadow*, props.pointerEvents) to their new equivalents (boxShadow, style.pointerEvents) to silence console warnings."
+  ],
+  "critical_code_review_comments": [
+    "server.py is >1500 lines — consider splitting into modules (auth, manifestations, admin, community, tickets) for maintainability.",
+    "Admin dashboard fallback path in get_current_admin also accepts ADMIN_EMAILS user session — verified this correctly rejects normal user tokens (403).",
+    "hmac.compare_digest used for ADMIN_PASSWORD comparison — good.",
+    "All admin config PATCH updates restore correctly and defaults preserved via DEFAULT_APP_CONFIG merge in get_app_config()."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "100%", "frontend": "95%"},
+  "seed_data_creation": "Created dev-login users tester_<ts>@mtree.dev and uitester_frontend@mtree.dev with 1 active manifestation each (goal=wealth, sacrifice=junk_food, burning_desire set). All @mtree.dev accounts are automatically excluded from Community Wall + admin listings per server.py logic — safe to leave in DB.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Frontend auth: dev-login token injection into localStorage key 'mtree_session_token' (JSON.stringify wrapped) works. For test users to bypass onboarding/journey-intro and land on Home directly, PATCH /api/profile with {onboarding_done:true, profile_done:true, tour_done:true, journey_intro_seen:true, deity_id:1}. Backend base URL is EXPO_PUBLIC_BACKEND_URL=https://mtree-ui-overhaul.preview.emergentagent.com. Admin dashboard password: MTree@Sacred#2026. Playwright mouse.down/up cannot reliably fire React Native Pressable onLongPress — test hold-to-confirm buttons on native device.",
+  "rca_of_issue": "N/A — no blocking issues found. Only a web-preview gesture limitation for HoldProgressButton and 2 RN-web deprecation warnings."
+}
