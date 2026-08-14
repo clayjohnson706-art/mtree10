@@ -228,8 +228,38 @@ export default function Ritual() {
 
                 <Card style={styles.chantCard} testID="ritual-chant-card">
                   <Text style={styles.affirmHeadLabel}>✦ HOW TO PRACTICE</Text>
-                  <Text style={styles.boldInstruction} testID="ritual-chant-count">{uiStrings.chant_affirmation_10}</Text>
-                  <Text style={styles.mutedText}>{uiStrings.dont_give_up_sacrifice}</Text>
+                  <View style={styles.practiceList}>
+                    <PracticeRow
+                      icon="repeat"
+                      color={COLORS.gold}
+                      title="Mental Chanting — 10×"
+                      body="Every time a notification arrives (or the urge strikes), chant your affirmation 10 times in your mind. Repetition is how the mind rewires."
+                    />
+                    <PracticeRow
+                      icon="sunny"
+                      color={COLORS.warning}
+                      title="Wake-Up Power"
+                      body="Right after waking, your subconscious is at its most receptive. Morning chanting programs the tone of your entire day."
+                    />
+                    <PracticeRow
+                      icon="moon"
+                      color={COLORS.electric}
+                      title="Bedtime Power"
+                      body="Your subconscious processes your last thoughts all through sleep. Chanting before bed plants your desire the deepest."
+                    />
+                    <PracticeRow
+                      icon="infinite"
+                      color={COLORS.success}
+                      title="Consistency Compounds"
+                      body="Each repetition deepens the neural pathway. This is exactly how habits and beliefs are rewired — never skip a day."
+                    />
+                    <PracticeRow
+                      icon="eye"
+                      color={COLORS.cyan}
+                      title="Visualize It Done"
+                      body="While chanting, see your desire as ALREADY achieved — feel it, hear it, live it with all senses. Emotion is the amplifier."
+                    />
+                  </View>
                   <Text style={styles.boldInstruction}>{uiStrings.chant_this_10_too}</Text>
                 </Card>
 
@@ -306,6 +336,20 @@ export default function Ritual() {
   );
 }
 
+function PracticeRow({ icon, color, title, body }: { icon: keyof typeof Ionicons.glyphMap; color: string; title: string; body: string }) {
+  return (
+    <View style={styles.practiceRow}>
+      <View style={[styles.practiceIcon, { backgroundColor: color + "1E", borderColor: color + "44" }]}>
+        <Ionicons name={icon} size={17} color={color} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={[styles.practiceTitle, { color }]}>{title}</Text>
+        <Text style={styles.practiceBody}>{body}</Text>
+      </View>
+    </View>
+  );
+}
+
 function IconTile({
   icon, emoji, label, value, color,
 }: { icon?: keyof typeof Ionicons.glyphMap; emoji?: string; label: string; value: string; color?: string }) {
@@ -351,6 +395,14 @@ const styles = StyleSheet.create({
 
   sacrificeCard: { padding: 18, marginBottom: 14, backgroundColor: COLORS.gold + "10", alignItems: "center" },
   chantCard: { padding: 18, marginTop: 14, marginBottom: 14, backgroundColor: COLORS.gold + "10", alignItems: "center" },
+  practiceList: { alignSelf: "stretch", marginTop: 14, gap: 14 },
+  practiceRow: { flexDirection: "row", alignItems: "flex-start", gap: 12 },
+  practiceIcon: {
+    width: 36, height: 36, borderRadius: 12, borderWidth: 1,
+    alignItems: "center", justifyContent: "center", marginTop: 2,
+  },
+  practiceTitle: { fontSize: 14, fontWeight: "900" },
+  practiceBody: { color: COLORS.gray1, fontSize: 12.5, lineHeight: 18.5, marginTop: 3 },
   sacrificeBold: { color: COLORS.white, fontSize: 15, fontWeight: "800", lineHeight: 22, textAlign: "center" },
 
   gsRow: { flexDirection: "row", gap: 10 },

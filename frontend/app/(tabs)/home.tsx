@@ -544,33 +544,30 @@ export default function Home() {
       )}
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         <SwipeNav screen="home">
-        {/* Sticky header — stays fixed at the top while content scrolls underneath it, in
-            every state (pre- and post-selection). Deliberately kept OUTSIDE the ScrollView. */}
-        <View style={styles.stickyHeader} testID="home-sticky-header">
-          <View style={styles.headerCard}>
-          <AppLogo size={40} />
-          <View style={{ flexDirection: "row", gap: 10 }}>
-            {!!active && (
-              <TouchableOpacity
-                onPress={() => setShowReminderCenter(true)}
-                testID="home-reminder-bell"
-                hitSlop={12}
-                style={styles.settingsBtn}
-              >
-                <Ionicons
-                  name={active.reminder_count > 0 ? "notifications" : "notifications-off-outline"}
-                  size={20}
-                  color={active.reminder_count > 0 ? COLORS.gold : COLORS.gray2}
-                />
+        {/* Header scrolls WITH the content (no black bar) — transparent, part of the page. */}
+        <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 6, paddingBottom: 220 }} showsVerticalScrollIndicator={false}>
+          <View style={styles.headerBar} testID="home-header">
+            <AppLogo size={40} />
+            <View style={{ flexDirection: "row", gap: 10 }}>
+              {!!active && (
+                <TouchableOpacity
+                  onPress={() => setShowReminderCenter(true)}
+                  testID="home-reminder-bell"
+                  hitSlop={12}
+                  style={styles.settingsBtn}
+                >
+                  <Ionicons
+                    name={active.reminder_count > 0 ? "notifications" : "notifications-off-outline"}
+                    size={20}
+                    color={active.reminder_count > 0 ? COLORS.gold : COLORS.gray2}
+                  />
+                </TouchableOpacity>
+              )}
+              <TouchableOpacity onPress={() => router.push("/settings")} testID="home-settings" hitSlop={12} style={styles.settingsBtn}>
+                <Ionicons name="settings-outline" size={20} color={COLORS.gray1} />
               </TouchableOpacity>
-            )}
-            <TouchableOpacity onPress={() => router.push("/settings")} testID="home-settings" hitSlop={12} style={styles.settingsBtn}>
-              <Ionicons name="settings-outline" size={20} color={COLORS.gray1} />
-            </TouchableOpacity>
+            </View>
           </View>
-          </View>
-        </View>
-        <ScrollView contentContainerStyle={{ padding: 16, paddingTop: 10, paddingBottom: 220 }} showsVerticalScrollIndicator={false}>
           {!manifestLoaded ? (
             // Unified top-of-screen skeleton — pixel-matched to the Moon/Cosmic row, Deity
             // Hero card, and Goal/Sacrifice row it precedes, so nothing pops in at a different
@@ -706,8 +703,22 @@ export default function Home() {
           </>
           )}
 
+          {/* §5 order: streak cards FIRST (notification + daily grouped), affirmation below. */}
           {active && manifestLoaded && (
             <View style={{ marginTop: 12, marginBottom: 12 }}>
+              <NotificationStreakCard
+                score={active.notification_score || 0}
+                target={(active.cycle_days || 0) * (active.reminder_count || 0)}
+                notificationStreak={active.notification_streak || 0}
+                dailyStreak={active.streak_count || 0}
+                maxDailyStreak={active.max_streak || 0}
+                onDailyPress={() => setShowStreakDetail(true)}
+              />
+            </View>
+          )}
+
+          {active && manifestLoaded && (
+            <View style={{ marginBottom: 12 }}>
               <SacredCommitmentCard
                 testID="home-sacred-commitment"
                 burningDesire={active.burning_desire || active.goal_description}
@@ -715,103 +726,6 @@ export default function Home() {
                 sacrifice={fillSacrificeTemplate(uiStrings.sacrifice_template, sacrificeLabelTranslated, goalLabelTranslated)}
               />
             </View>
-          )}
-
-          {active && manifestLoaded && (
-            <View style={{ marginBottom: 12 }}>
-              <NotificationStreakCard
-                score={active.notification_score || 0}
-                target={(active.cycle_days || 0) * (active.reminder_count || 0)}
-                notificationStreak={active.notification_streak || 0}
-                dailyStreak={active.streak_count || 0}
-                maxDailyStreak={active.max_streak || 0}
-                onHoldDone={markNotificationStreakDone}
-                onDailyPress={() => setShowStreakDetail(true)}
-              />
-            </View>
-          )}
-
-          {/* Daily Streak — redesigned as the app's most rewarding, glanceable card: big
-              pulsing flame + streak number + tiered motivational line, personal-best badge,
-              and the cycle progress bar underneath. Tapping opens a dedicated streak-only
-              detail sheet (decoupled from the generic "Your Journey" card below). */}
-          {false && active && (
-            <TouchableOpacity testID="daily-streak-bar" activeOpacity={0.9} onPress={() => setShowStreakDetail(true)} style={{ marginBottom: 12 }}>
-              <Card style={styles.streakCard}>
-                <LinearGradient colors={[COLORS.gold + "22", COLORS.surface1]} style={StyleSheet.absoluteFillObject} pointerEvents="none" />
-                <View style={styles.streakTopRow}>
-                  <View style={styles.streakFlameWrap}>
-                    <Animated.View pointerEvents="none" style={[styles.streakFlameGlow, streakGlowStyle]} />
-                    <Text style={styles.streakFlameEmoji}>🔥</Text>
-                  </View>
-                  <View style={{ flex: 1, marginLeft: 14 }}>
-                    <View style={{ flexDirection: "row", alignItems: "baseline" }}>
-                      <Text style={styles.streakBigNum}>{active.streak_count}</Text>
-                      <Text style={styles.streakUnit}>
-                        {"  "}{active.streak_count === 1 ? "DAY STREAK" : "DAY STREAK"}
-                      </Text>
-                    </View>
-                    <Text style={styles.streakMsg} numberOfLines={1}>{streakMessage}</Text>
-                  </View>
-                  <Ionicons name="chevron-forward" size={18} color={COLORS.gray2} />
-                </View>
-                <View style={styles.streakDivider} />
-                <View style={styles.weekStripRow}>
-                  {weekStrip.map((cell, idx) => (
-                    <React.Fragment key={cell.day}>
-                      {idx > 0 && (
-                        <View
-                          style={[
-                            styles.stripConnector,
-                            weekStrip[idx - 1].status === "completed" && styles.stripConnectorActive,
-                          ]}
-                        />
-                      )}
-                      <View style={[styles.stripCircle, stripCircleStyle(cell.status, deity.color)]}>
-                        {cell.status === "completed" ? (
-                          <Ionicons name="checkmark" size={13} color={COLORS.void} />
-                        ) : cell.status === "next" ? (
-                          <View style={styles.stripNextDot} />
-                        ) : (
-                          <Text style={styles.stripUpcomingNum}>{cell.day}</Text>
-                        )}
-                      </View>
-                    </React.Fragment>
-                  ))}
-                </View>
-                <View style={styles.journeyMeta}>
-                  <Text style={styles.journeyPct}>Day {active.current_day} of {active.cycle_days}</Text>
-                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                    <Ionicons name="trophy" size={11} color={COLORS.gold} />
-                    <Text style={styles.journeyStatusText}>Best {active.max_streak}</Text>
-                  </View>
-                </View>
-              </Card>
-            </TouchableOpacity>
-          )}
-
-          {/* Affirmation — order: Moon Phase, Cosmic Energy, Deity, Daily Streak, then
-              Affirmation, so the most glanceable/actionable cards lead. */}
-          {false && showAffirmationCard && (
-            <TouchableOpacity
-              testID="affirmation-card"
-              activeOpacity={0.85}
-              onPress={() => isPremium ? setShowAffirmation(true) : router.push("/paywall")}
-              style={{ marginBottom: 12 }}
-            >
-              <Card style={styles.affirmationBig}>
-                <LinearGradient colors={[deity.color + "18", COLORS.surface1]} style={StyleSheet.absoluteFillObject} pointerEvents="none" />
-                <View style={styles.affirmHeader}>
-                  <Text style={styles.affirmHeadLabel}>✦ DAILY AFFIRMATION</Text>
-                  <View style={styles.langPill}>
-                    <Text style={styles.langText}>
-                      {shortLang(user?.affirmation_language)}
-                    </Text>
-                  </View>
-                </View>
-                <Text style={styles.affirmBigText} numberOfLines={4}>{affirmationText}</Text>
-              </Card>
-            </TouchableOpacity>
           )}
 
           {/* Your Journey — details grid (streak bar detached above) */}
@@ -1308,18 +1222,14 @@ const styles = StyleSheet.create({
   topRowLegacy: { display: "none" },
 
   topRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
-  stickyHeader: {
-    paddingHorizontal: 16, paddingTop: 8, paddingBottom: 12,
-    backgroundColor: COLORS.void, zIndex: 5,
-  },
-  headerCard: {
-    minHeight: 62, borderRadius: 20, paddingHorizontal: 14,
+  headerBar: {
     flexDirection: "row", justifyContent: "space-between", alignItems: "center",
-    backgroundColor: COLORS.surface1, borderWidth: 1, borderColor: COLORS.gray3,
+    marginBottom: 14, paddingTop: 2,
   },
   settingsBtn: {
     width: 40, height: 40, borderRadius: 999,
-    backgroundColor: COLORS.surface1,
+    backgroundColor: COLORS.surface1 + "CC",
+    borderWidth: 1, borderColor: "rgba(255,255,255,0.08)",
     alignItems: "center", justifyContent: "center",
   },
 

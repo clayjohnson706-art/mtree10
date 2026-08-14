@@ -14,9 +14,20 @@ import AuthNavGuard from "@/src/components/AuthNavGuard";
 import { COLORS } from "@/src/theme";
 import { notificationsAvailable } from "@/src/utils/notifications";
 import { markColdStartNavigationHandled } from "@/src/utils/coldStartNav";
-import { useFonts, Manrope_400Regular } from "@expo-google-fonts/manrope";
+import { useFonts } from "expo-font";
 
-const globalFontStyle = { fontFamily: "Manrope_400Regular" };
+// Unified app typography (see src/theme FONTS): Nunito for everything, Lora for affirmations.
+// Loaded from bundled assets via expo-font — no network dependency.
+const FONT_MAP = {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  Nunito_400Regular: require("../assets/fonts/Nunito-Regular.ttf"),
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  Lora_500Medium: require("../assets/fonts/Lora-Medium.ttf"),
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  Lora_500MediumItalic: require("../assets/fonts/Lora-MediumItalic.ttf"),
+};
+
+const globalFontStyle = { fontFamily: "Nunito_400Regular" };
 (Text as any).defaultProps = { ...(Text as any).defaultProps, style: [globalFontStyle, (Text as any).defaultProps?.style] };
 (TextInput as any).defaultProps = { ...(TextInput as any).defaultProps, style: [globalFontStyle, (TextInput as any).defaultProps?.style] };
 
@@ -25,7 +36,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const [loaded, error] = useIconFonts();
-  const [fontLoaded, fontError] = useFonts({ Manrope_400Regular });
+  const [fontLoaded, fontError] = useFonts(FONT_MAP);
   const router = useRouter();
 
   useEffect(() => {

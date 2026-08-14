@@ -10,25 +10,30 @@ import { Card, FilledButton } from "@/src/components/ui";
 import { DeityStone } from "@/src/components/DeityStone";
 import { api } from "@/src/utils/api";
 import { useAuth } from "@/src/context/AuthContext";
+import { useAppConfig } from "@/src/context/AppConfigContext";
 
 const { height: SCREEN_H } = Dimensions.get("window");
 
 export default function Saved() {
   const router = useRouter();
   const { user } = useAuth();
+  const config = useAppConfig();
+  // Saved cards follow the Community feature's access rule — free while the
+  // community_premium_required flag is off (current testing phase).
+  const hasAccess = !!user?.is_premium || !config.community_premium_required;
   const [items, setItems] = useState<any[]>([]);
   const [selected, setSelected] = useState<any | null>(null);
   const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
-    if (!user?.is_premium) return;
+    if (!hasAccess) return;
     setLoading(true);
     try {
       const data = await api<any[]>("/community/saved");
       setItems(data);
     } catch {}
     finally { setLoading(false); }
-  }, [user?.is_premium]);
+  }, [hasAccess]);
 
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
@@ -53,12 +58,9 @@ export default function Saved() {
             <Ionicons name="lock-closed" size={44} color={COLORS.gold} />
             <Text style={styles.lockTitle}>Saved Manifestations is Premium</Text>
             <Text style={styles.lockDesc}>Bookmark inspiring manifestations from the Wall.</Text>
-            <FilledButton
-              testID="saved-upgrade"
-              label="Upgrade ✦"
-              onPress={() => router.push("/paywall")}
-              style={{ marginTop: 24, width: 200 }}
-            />
+            <Text style={[styles.lockDesc, { marginTop: 12, color: COLORS.gold, fontWeight: "700" }]}>
+              Premium plans are coming soon.
+            </Text>
           </View>
         </SafeAreaView>
       </View>

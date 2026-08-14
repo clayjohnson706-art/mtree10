@@ -1,0 +1,37 @@
+{
+  "summary": "Iteration 2 — 12-section UI overhaul verification. Backend regression: 6/6 pytest cases PASS (auth/me, app-config, community/wall free, profile PATCH, manifestation create + active GET persistence, admin/login + admin/stats with MTree@Sacred#2026). Frontend (390x844, dev-login token injected): all 12 spec sections verified live or via code inspection. Home (§4,§5,§6,§7): home-header background = rgba(0,0,0,0) (transparent, no black bar) and lives inside the ScrollView so it scrolls away with content; card order top→bottom = Moon/Cosmic row → Deity Hero (SOLMARA) → Streak Hub (streak-hub-card with 0% progress ring, notification-streak pill 0/105, 0 DAY STREAK row, flame, Details link, and 7d/21d/40d milestone chip strip) → Your Sacred Commitment (home-sacred-commitment: Burning Desire → centered serif affirmation → Sacrifice) → Your Journey grid → sticky HOLD TO START / ✦ Came True bar. Zero HOLD TO MARK DONE anywhere on Home (correct — moved to /ritual-reminder). §2 Manifest-setup confirm step Summary card (code-verified) renders GOAL, BURNING DESIRE, AFFIRMATION, SACRIFICE, ALARMS, REMINDERS, HUSTLE, FASTING rows. §3 JourneyIntroOverlay (code-verified: /app/frontend/src/components/JourneyIntroOverlay.tsx) exposes testID journey-intro-screen container, journey-intro-came-true-card at index 4 with golden journey-intro-came-true-visual mock button, and horizontal slide transition via slideX translateX (SLIDE_MS out-to-left→in-from-right). §8 Ritual tab (ritual-chant-card) renders all 5 rows: Mental Chanting 10x, Wake-Up Power, Bedtime Power, Consistency Compounds, Visualize It Done — with Sacred Commitment card above (centered serif affirmation). §9 Tab bar navigation home→ritual→wall→me→home all render, no crashes or red screen. §10 Settings: NO 🔒 icons in section titles, tapping settings-reminders-row opens ReminderCenter sheet (URL stays /settings, no paywall push), settings-language-row present, subscription-free section visible; /paywall and /subscription routes return Unmatched Route. §12 settings-streak-reminder-toggle ON → settings-streak-reminder-time row appears at 8:00 PM. §11 Affirmation renders in Lora serif on Home, Ritual, and modals. Community wall loads FREE (no premium lock text). Only remaining console warnings are same RN-web deprecations (shadow*, pointerEvents) already reported in iteration 1.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "global (RN-web)", "issues": [
+        "Recurring console warnings: '\"shadow*\" style props are deprecated. Use \"boxShadow\".' and 'props.pointerEvents is deprecated. Use style.pointerEvents' — same as iteration 1, not yet migrated.",
+        "Streak Hub milestone chips (7d / 21d / 40d) are rendered as inline chip pills but do not expose individual testIDs (streak-milestone-7 / -21 / -40). Non-blocking; add testIDs if you want per-badge assertions in future test runs."
+      ]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_ui_overhaul_v10.py",
+    "/app/test_reports/pytest/ui_overhaul_v10.xml"
+  ],
+  "action_items": [
+    "(Carry-over from iteration 1) Migrate remaining React Native Web deprecated style props (shadow* → boxShadow, props.pointerEvents → style.pointerEvents) across cards / hold buttons / glow overlays to silence RN-web console warnings.",
+    "Optional polish: add individual testIDs (streak-milestone-7 / -21 / -40) to the Bronze/Silver/Gold milestone chips inside streak-hub-card so future tests can assert per-badge unlock state directly."
+  ],
+  "critical_code_review_comments": [
+    "home.tsx is ~1200 lines — heavy but each block is well-commented; consider extracting DeitySkeleton, StreakSkeleton, and the modal cluster (Moon/Cosmic/Journey/Hustle/Fasting/CameTrue/StreakSuccess/Locked/DeleteConfirm) into a /src/components/home/*.tsx folder to bring the screen under 500 lines.",
+    "JourneyIntroOverlay uses a single shared translateX + opacity for slide — clean, but every card mounts in the same tree; if the intro grows, consider a windowed carousel to avoid off-screen work.",
+    "paywall.tsx and subscription.tsx are correctly deleted from /app/frontend/app/; no remaining code path pushes to /paywall or /subscription (verified via routes returning Unmatched)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_ui_overhaul_v10.py (new backend regression suite for this iteration)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "Created dev-login users TEST_uiv10_<ts>@mtree.dev (backend regression) and TEST_uiv10front_<ts>@mtree.dev (frontend UI walkthrough) each with one active manifestation (goal=money, sacrifice=social_media, hustle+fasting enabled, deity_id=6). Both @mtree.dev accounts are auto-excluded from Community Wall + admin listings per server.py, safe to leave.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Auth: POST /api/auth/dev-login?email=<uniq>@mtree.dev&name=X → session_token; on web inject via localStorage.setItem('mtree_session_token', JSON.stringify(token)) then goto /. To skip onboarding+journey-intro on a fresh user: PATCH /api/profile {onboarding_done:true, profile_done:true, tour_done:true, journey_intro_seen:true, deity_id:6} then POST /api/manifestations. Backend URL = https://mtree-ui-overhaul.preview.emergentagent.com. Admin: MTree@Sacred#2026. Pytest xdist is on by default in /app/backend/pytest.ini — run per-user-token tests with `-o addopts=''` to force serial execution so a single fixture-token isn't split across workers (that caused false 401s on first pass here; already fixed in this iteration's tests). Playwright cannot reliably fire React Native Pressable onLongPress via mouse.down/up (hold-to-confirm buttons must be verified on Expo Go / device).",
+  "rca_of_issue": "N/A — no blocking bugs. All 12 UI-overhaul sections behave per spec. Only findings are (a) pre-existing RN-web shadow*/pointerEvents deprecation warnings carried over from iteration 1, and (b) milestone chips lacking per-badge testIDs (cosmetic test-hook improvement)."
+}

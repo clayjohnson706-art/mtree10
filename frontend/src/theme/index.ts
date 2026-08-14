@@ -1,27 +1,33 @@
 export const COLORS = {
-  void: "#05050C",
-  bg: "#0A0A16",
-  surface1: "#12121F",
-  surface2: "#1A1A2E",
-  surface3: "#25253C",
+  void: "#060412",
+  bg: "#0B0722",
+  surface1: "#161031",
+  surface2: "#1F1745",
+  surface3: "#2B2058",
   gold: "#F5C542",
   goldSoft: "#F5C54220",
   goldGlow: "#F5C54240",
-  electric: "#8B95F6",
-  cyan: "#22D3EE",
-  white: "#FDFBF7",
-  gray1: "#B3B3C2",
-  gray2: "#67637C",
-  gray3: "#2A2740",
-  success: "#34D399",
+  electric: "#8F7FFF",
+  cyan: "#4EDCFF",
+  white: "#FBF8FF",
+  gray1: "#B9B0D6",
+  gray2: "#6F6795",
+  gray3: "#2E2452",
+  success: "#3EE6A8",
   warning: "#FFB020",
   danger: "#FF6B7A",
 };
 
+// One unified font system for the ENTIRE app (loaded in app/_layout.tsx via expo-font).
+// - body: Nunito — scientifically high-readability rounded sans, applied globally.
+// - affirmation: Lora — elegant, calm serif reserved for affirmation text everywhere.
 export const FONTS = {
-  primary: "System",
-  display: "System",
-  accent: "System",
+  body: "Nunito_400Regular",
+  affirmation: "Lora_500Medium",
+  affirmationItalic: "Lora_500MediumItalic",
+  primary: "Nunito_400Regular",
+  display: "Nunito_400Regular",
+  accent: "Lora_500Medium",
 };
 
 export const DEITIES = [

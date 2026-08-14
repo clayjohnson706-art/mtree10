@@ -805,3 +805,17 @@ Original ask: undo half-done changes, deep stunning dark/gold design overhaul, a
 - Real AdMob + Play Billing (RevenueCat) activation when live on Play Store
 - Native-device QA of alarm-style wake/sleep notifications + hold-to-done (requires production build)
 - Optional: migrate deprecated shadow*/pointerEvents style props (web-only warnings)
+
+---
+## Update — June 2026 (12-Section UI Overhaul & Bug Fixes)
+- §1 Full design overhaul: deep purple/midnight palette, glass Card component (hairline border, sheen gradient, ambient shadow), gradient gold buttons, press-scale micro-animations everywhere
+- §11 Typography: Nunito (global, readable) + Lora serif for ALL affirmation text (centered, 20sp, 1.5x line height) — loaded via expo-font local assets (removed @expo-google-fonts usage)
+- §4 Home header: transparent, scrolls with content (no black bar)
+- §5/§6 Streak Hub redesign: animated SVG progress ring, pulsing flame, 7/21/40-day bronze/silver/gold milestone badges; streaks placed ABOVE affirmation; hold-to-mark removed from home (only in /ritual-reminder notification card)
+- §2 Manifest-setup summary now shows GOAL + HUSTLE + FASTING
+- §3 Journey intro overlay: new "Came True" importance card (index 4) with golden button visual + horizontal slide transitions
+- §8 Ritual "How to Practice": 5 rich guidance rows (mental chanting 10x, wake-up/bedtime power, consistency, visualization)
+- §9 Tab transitions: navigator animation:"shift" (spring) + simplified SwipeNav (no opacity parking) — flicker fixed
+- §10 Everything free: paywall.tsx/subscription.tsx deleted, all premium gates/locks removed from Settings/Wall/Saved; Reminder & Language rows open their real sheets
+- §12 Daily reminder custom time picker verified working
+- Tests: /app/test_reports/iteration_2.json — all pass

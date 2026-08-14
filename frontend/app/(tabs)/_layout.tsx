@@ -87,7 +87,17 @@ export default function TabsLayout() {
     // gap instead of relying purely on AuthNavGuard's effect timing.
     <RequireAuth>
       <Tabs
-        screenOptions={{ headerShown: false, sceneStyle: { backgroundColor: COLORS.void } }}
+        screenOptions={{
+          headerShown: false,
+          sceneStyle: { backgroundColor: COLORS.void },
+          // Native smooth slide between tabs (React Navigation v7 bottom-tabs) — drives BOTH
+          // tab-bar taps and SwipeNav swipe commits with one continuous, flicker-free motion.
+          animation: "shift",
+          transitionSpec: {
+            animation: "spring",
+            config: { damping: 30, stiffness: 260, mass: 0.7 },
+          },
+        }}
         tabBar={(props) => <CustomTabBar {...props} />}
       >
         <Tabs.Screen name="home" />

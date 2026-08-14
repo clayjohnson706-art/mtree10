@@ -172,12 +172,9 @@ export default function Wall() {
               <Text style={styles.lockDesc}>
                 See what others have manifested. Draw inspiration. Save cards that resonate with you.
               </Text>
-              <FilledButton
-                testID="wall-upgrade"
-                label="Upgrade ✦"
-                onPress={() => router.push("/paywall")}
-                style={{ marginTop: 24, width: 200 }}
-              />
+              <Text style={[styles.lockDesc, { marginTop: 12, color: COLORS.gold, fontWeight: "700" }]}>
+                Premium plans are coming soon.
+              </Text>
             </View>
           </SwipeNav>
         </SafeAreaView>
