@@ -115,7 +115,7 @@ export default function Settings() {
     const doSchedule = async () => {
       const todayLocal = getLocalDateStr(new Date());
       const doneToday = active?.last_ritual_local_date === todayLocal;
-      const result = await scheduleStreakReminder(streakReminderTime, doneToday);
+      const result = await scheduleStreakReminder(streakReminderTime, doneToday, active?.streak_count ?? 0);
       setStreakPermBlocked(!result.scheduled && result.permission === "blocked");
     };
     if (state === "undetermined" || state === "denied") {
@@ -139,7 +139,7 @@ export default function Settings() {
       if (streakReminderEnabled) {
         const todayLocal = getLocalDateStr(new Date());
         const doneToday = active?.last_ritual_local_date === todayLocal;
-        const result = await scheduleStreakReminder(t, doneToday);
+        const result = await scheduleStreakReminder(t, doneToday, active?.streak_count ?? 0);
         setStreakPermBlocked(!result.scheduled && result.permission === "blocked");
       }
     } catch {}

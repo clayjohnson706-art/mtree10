@@ -88,15 +88,25 @@ const styles = StyleSheet.create({
   divider: { borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.07)" },
   labelRow: { flexDirection: "row", alignItems: "center", gap: 7 },
   label: { color: COLORS.gray1, fontSize: 10.5, fontWeight: "900", letterSpacing: 1.8 },
-  value: { color: COLORS.gold, fontSize: 20, fontWeight: "900", lineHeight: 28, marginTop: 8, textAlign: "center" },
-  compactValue: { fontSize: 17, lineHeight: 24 },
+  // §2 (font parity): Burning Desire, Affirmation and Sacrifice share ONE identical text
+  // treatment — same Lora serif, same size/line-height/letter-spacing, same centered gold.
+  value: {
+    fontFamily: FONTS.affirmationItalic,
+    color: COLORS.gold,
+    fontSize: 20,
+    lineHeight: 31,
+    textAlign: "center",
+    marginTop: 8,
+    paddingHorizontal: 4,
+  },
+  compactValue: { fontSize: 18, lineHeight: 28 },
   centerBlock: { alignItems: "center" },
   affirmationBlock: { alignItems: "center" },
   // §7 + §11: affirmation text is ALWAYS centered and set in Lora — a readability-proven,
   // calm serif — with generous 1.5x line height and ≥20sp size.
   affirmationText: {
     fontFamily: FONTS.affirmationItalic,
-    color: COLORS.white,
+    color: COLORS.gold,
     fontSize: 20,
     lineHeight: 31,
     textAlign: "center",

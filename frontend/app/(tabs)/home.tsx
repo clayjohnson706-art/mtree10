@@ -172,7 +172,7 @@ export default function Home() {
       // is visited: already done today -> pushed to tomorrow evening; not done -> stays tonight
       // at the user's chosen local time. No server push needed to "know" this dynamically.
       if (user?.streak_reminder_enabled !== false) {
-        scheduleStreakReminder(user?.streak_reminder_time ?? "20:00", doneToday).catch(() => {});
+        scheduleStreakReminder(user?.streak_reminder_time ?? "20:00", doneToday, m?.streak_count ?? 0).catch(() => {});
       }
     } catch (e) {
       console.warn("load failed", e);
@@ -262,7 +262,7 @@ export default function Home() {
       // evening instead of tonight, so the user doesn't get reminded about something already
       // completed (Section 5E: "if streak done today, don't send a reminder").
       if (user?.streak_reminder_enabled !== false) {
-        scheduleStreakReminder(user?.streak_reminder_time ?? "20:00", true).catch(() => {});
+        scheduleStreakReminder(user?.streak_reminder_time ?? "20:00", true, (active?.streak_count ?? 0) + 1).catch(() => {});
       }
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       setShowStreakCard(wasFirstRitual ? "start" : "power");
@@ -284,7 +284,7 @@ export default function Home() {
     // always stays in sync with however long the user actually holds the button.
     symbolPulse.value = withRepeat(
       withSequence(
-        withTiming(1.1, { duration: 600, easing: Easing.inOut(Easing.quad) }),
+        withTiming(1.05, { duration: 600, easing: Easing.inOut(Easing.quad) }),
         withTiming(1, { duration: 600, easing: Easing.inOut(Easing.quad) })
       ),
       -1,
@@ -322,7 +322,7 @@ export default function Home() {
     // ritual — but its SIZE (symbolPulse, glowScaleBoost) always returns to the exact pre-hold
     // baseline, so the deity circle never ends up permanently larger, only more luminous.
     symbolPulse.value = withSequence(
-      withTiming(1.45, { duration: 160, easing: Easing.out(Easing.quad) }),
+      withTiming(1.15, { duration: 160, easing: Easing.out(Easing.quad) }),
       withTiming(1, { duration: 500 })
     );
     energyGlow.value = withSequence(
@@ -334,7 +334,7 @@ export default function Home() {
       withTiming(0, { duration: 500 })
     );
     seedScale.value = withSequence(
-      withTiming(1.9, { duration: 160, easing: Easing.out(Easing.quad) }),
+      withTiming(1.5, { duration: 160, easing: Easing.out(Easing.quad) }),
       withTiming(0, { duration: 500 })
     );
     flashOpacity.value = withSequence(
@@ -383,6 +383,8 @@ export default function Home() {
     setBusyState(true);
     try {
       await api(`/manifestations/${active.id}/abandon`, { method: "POST" });
+      // Keep the skeleton-shape hint in sync — the next cold load is a PRE-selection screen.
+      AsyncStorage.setItem(HAD_ACTIVE_CACHE_KEY, "false").catch(() => {});
       setActive(null);
       setAffirmation(null);
       setRitualDone(false);
@@ -637,22 +639,44 @@ export default function Home() {
                 </>
               )}
               <View style={styles.gsRow} testID="goal-sacrifice-skeleton">
-                <Card style={styles.gsCard}>
-                  <View style={styles.gsInner}>
-                    <Skeleton style={{ width: 44, height: 44, borderRadius: 999 }} />
-                    <Skeleton style={{ width: 60, height: 10, marginTop: 4 }} />
-                    <Skeleton style={{ width: 80, height: 13 }} />
-                    <Skeleton style={{ width: 11, height: 11, borderRadius: 999, marginTop: 4 }} />
-                  </View>
-                </Card>
-                <Card style={styles.gsCard}>
-                  <View style={styles.gsInner}>
-                    <Skeleton style={{ width: 44, height: 44, borderRadius: 999 }} />
-                    <Skeleton style={{ width: 60, height: 10, marginTop: 4 }} />
-                    <Skeleton style={{ width: 80, height: 13 }} />
-                    <Skeleton style={{ width: 11, height: 11, borderRadius: 999, marginTop: 4 }} />
-                  </View>
-                </Card>
+                {hadActiveHint ? (
+                  // Post-selection shape: icon + label + value + lock (matches gsInner)
+                  <>
+                    <Card style={styles.gsCard} wrapperStyle={{ flex: 1 }}>
+                      <View style={styles.gsInner}>
+                        <Skeleton style={{ width: 44, height: 44, borderRadius: 999 }} />
+                        <Skeleton style={{ width: 60, height: 10, marginTop: 4 }} />
+                        <Skeleton style={{ width: 80, height: 13 }} />
+                        <Skeleton style={{ width: 11, height: 11, borderRadius: 999, marginTop: 4 }} />
+                      </View>
+                    </Card>
+                    <Card style={styles.gsCard} wrapperStyle={{ flex: 1 }}>
+                      <View style={styles.gsInner}>
+                        <Skeleton style={{ width: 44, height: 44, borderRadius: 999 }} />
+                        <Skeleton style={{ width: 60, height: 10, marginTop: 4 }} />
+                        <Skeleton style={{ width: 80, height: 13 }} />
+                        <Skeleton style={{ width: 11, height: 11, borderRadius: 999, marginTop: 4 }} />
+                      </View>
+                    </Card>
+                  </>
+                ) : (
+                  // PRE-selection shape: matches the real "SET GOAL / SET SACRIFICE" empty cards
+                  // (dashed 48px plus-circle + one label line, styles.gsEmpty) exactly.
+                  <>
+                    <Card style={styles.gsCard} wrapperStyle={{ flex: 1 }}>
+                      <View style={styles.gsEmpty}>
+                        <Skeleton style={{ width: 48, height: 48, borderRadius: 999 }} />
+                        <Skeleton style={{ width: 74, height: 12 }} />
+                      </View>
+                    </Card>
+                    <Card style={styles.gsCard} wrapperStyle={{ flex: 1 }}>
+                      <View style={styles.gsEmpty}>
+                        <Skeleton style={{ width: 48, height: 48, borderRadius: 999 }} />
+                        <Skeleton style={{ width: 92, height: 12 }} />
+                      </View>
+                    </Card>
+                  </>
+                )}
               </View>
             </View>
           ) : (
@@ -1235,10 +1259,10 @@ const styles = StyleSheet.create({
 
   row2: { flexDirection: "row", gap: 10, marginBottom: 10 },
   statCard: { flex: 1, paddingHorizontal: 14, paddingVertical: 8, height: 66, justifyContent: "space-between" },
-  statRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "baseline" },
+  statRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", minHeight: 22 },
   miniLabel: { color: COLORS.gray2, fontSize: 9, fontWeight: "700", letterSpacing: 1.2 },
-  moonName: { color: COLORS.white, fontSize: 15, fontWeight: "800", fontStyle: "italic", flexShrink: 1 },
-  cosmicNum: { color: COLORS.gold, fontSize: 20, fontWeight: "900" },
+  moonName: { color: COLORS.white, fontSize: 16, fontWeight: "800", flexShrink: 1 },
+  cosmicNum: { color: COLORS.gold, fontSize: 16, fontWeight: "800" },
   miniSub: { color: COLORS.gray1, fontSize: 10, marginLeft: 6, flexShrink: 1, textAlign: "right" },
   miniBar: { height: 3, backgroundColor: COLORS.gray3, borderRadius: 2, overflow: "hidden" },
   miniFill: { height: "100%" },

@@ -66,7 +66,9 @@ export default function DeityHero({
     const bs = boostScale?.value ?? b;
     return {
       opacity: Math.min(1, interpolate(outer.value, [0, 1], [0.08, 0.16]) + b * 0.75),
-      transform: [{ scale: interpolate(outer.value, [0, 1], [0.95, 1.05]) * (1 + bs * 0.55) }],
+      // Deliberately gentler bumps than before (0.55/0.5) — at DEITY_SIZE 210 inside a ~300pt
+      // card the halo must never reach the card edges, even at full hold intensity.
+      transform: [{ scale: interpolate(outer.value, [0, 1], [0.95, 1.05]) * (1 + bs * 0.25) }],
     };
   });
   const midStyle = useAnimatedStyle(() => {
@@ -74,7 +76,7 @@ export default function DeityHero({
     const bs = boostScale?.value ?? b;
     return {
       opacity: Math.min(1, interpolate(mid.value, [0, 1], [0.25, 0.4]) + b * 0.7),
-      transform: [{ scale: interpolate(mid.value, [0, 1], [0.97, 1.03]) * (1 + bs * 0.5) }],
+      transform: [{ scale: interpolate(mid.value, [0, 1], [0.97, 1.03]) * (1 + bs * 0.22) }],
     };
   });
   const innerStyle = useAnimatedStyle(() => {

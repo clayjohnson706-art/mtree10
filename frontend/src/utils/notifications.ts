@@ -265,7 +265,7 @@ export async function cancelStreakReminder() {
   try { await Notifications.cancelScheduledNotificationAsync(STREAK_REMINDER_ID); } catch {}
 }
 
-export async function scheduleStreakReminder(time: string, ritualDoneToday = false): Promise<{ scheduled: boolean; permission: NotificationPermissionState }> {
+export async function scheduleStreakReminder(time: string, ritualDoneToday = false, streakCount = 0): Promise<{ scheduled: boolean; permission: NotificationPermissionState }> {
   if (!Notifications) return { scheduled: false, permission: "unavailable" };
   await cancelStreakReminder();
   if (!await requestNotificationPermissions()) return { scheduled: false, permission: await getNotificationPermissionState() };
@@ -278,7 +278,10 @@ export async function scheduleStreakReminder(time: string, ritualDoneToday = fal
       identifier: STREAK_REMINDER_ID,
       content: {
         title: "Protect Your Daily Streak",
-        body: "Complete today's ritual before the day ends — discipline keeps your intention alive.",
+        // Small streak-specific contextual line — everything else matches the other notifications.
+        body: streakCount > 0
+          ? `Don't break your ${streakCount}-day streak — complete today's ritual before the day ends.`
+          : "Complete today's ritual before the day ends — discipline keeps your intention alive.",
         sound: false,
         data: { type: "streak-reminder" },
         ...(Platform.OS === "android" ? { channelId: STANDARD_CHANNEL } : {}),

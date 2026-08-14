@@ -192,7 +192,7 @@ export default function Ritual() {
                   </View>
                   <View style={styles.journeyFlow}>
                     {[1, 2, 3, 4, 5, 6].map((n) => (
-                      <View key={n} style={styles.journeyCard}>
+                      <View key={n} style={[styles.journeyCard, { backgroundColor: COLORS.surface1 }]}>
                         <Skeleton style={{ width: 46, height: 46, borderRadius: 999 }} />
                         <View style={{ flex: 1 }}>
                           <Skeleton style={{ width: 90, height: 14.5, marginBottom: 4 }} />

@@ -111,8 +111,10 @@ export default function RitualReminder() {
                 </View>
                 <Text style={styles.title}>{title}</Text>
                 <Text style={styles.subtitle}>
-                  {isAlarm
-                    ? "This alarm marks one of the two most powerful affirmation moments of your day."
+                  {kind === "wake"
+                    ? "Your morning ritual begins now — your subconscious is most receptive at dawn."
+                    : kind === "sleep"
+                    ? "Your last thoughts shape tomorrow — plant your desire as you drift into sleep."
                     : "Pause with presence. Your response strengthens your notification streak."}
                 </Text>
                 {active ? (

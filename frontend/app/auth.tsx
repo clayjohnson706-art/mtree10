@@ -126,12 +126,14 @@ export default function Auth() {
             activeOpacity={0.85}
             style={[styles.googleBtn, (!agreed || signing) && styles.googleBtnDisabled]}
           >
-            <View style={styles.googleIconChip}>
-              <Text style={styles.googleG}>G</Text>
+            <View style={styles.googleBtnContent}>
+              <View style={styles.googleIconChip}>
+                <Ionicons name="logo-google" size={17} color="#4285F4" />
+              </View>
+              <Text style={[styles.googleBtnText, (!agreed || signing) && { color: COLORS.gray2 }]}>
+                {signing ? "Signing in..." : "Continue with Google"}
+              </Text>
             </View>
-            <Text style={[styles.googleBtnText, (!agreed || signing) && { color: COLORS.gray2 }]}>
-              {signing ? "Signing in..." : "Continue with Google"}
-            </Text>
           </TouchableOpacity>
           {signing && <ActivityIndicator color={COLORS.gold} style={{ marginTop: 16 }} />}
         </View>
@@ -198,13 +200,13 @@ const styles = StyleSheet.create({
     opacity: 0.55,
   },
   googleIconChip: {
-    width: 30,
-    height: 30,
+    width: 32,
+    height: 32,
     borderRadius: 999,
     backgroundColor: COLORS.white,
     alignItems: "center",
     justifyContent: "center",
+    marginRight: 12,
   },
-  googleG: { color: "#4285F4", fontSize: 17, fontWeight: "900" },
   googleBtnText: { color: COLORS.white, fontSize: 15.5, fontWeight: "800", letterSpacing: 0.3 },
 });
