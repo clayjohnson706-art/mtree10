@@ -38,9 +38,9 @@ export default function SacredCommitmentCard({
         <Text style={styles.heading}>Your Sacred Commitment</Text>
       </View>
 
-      {/* 1 — Burning Desire */}
-      <View testID={`${testID}-burning-desire`} style={styles.row}>
-        <View style={styles.labelRow}>
+      {/* 1 — Burning Desire (centered — identical treatment to the affirmation) */}
+      <View testID={`${testID}-burning-desire`} style={[styles.row, styles.centerBlock]}>
+        <View style={[styles.labelRow, { justifyContent: "center" }]}>
           <Ionicons name="heart" size={13} color={COLORS.danger} />
           <Text style={styles.label}>BURNING DESIRE</Text>
         </View>
@@ -60,9 +60,9 @@ export default function SacredCommitmentCard({
         </Text>
       </View>
 
-      {/* 3 — Sacrifice */}
-      <View testID={`${testID}-sacrifice`} style={[styles.row, styles.divider]}>
-        <View style={styles.labelRow}>
+      {/* 3 — Sacrifice (centered — identical treatment to the affirmation) */}
+      <View testID={`${testID}-sacrifice`} style={[styles.row, styles.divider, styles.centerBlock]}>
+        <View style={[styles.labelRow, { justifyContent: "center" }]}>
           <Ionicons name="flame" size={13} color={COLORS.warning} />
           <Text style={styles.label}>SACRIFICE</Text>
         </View>
@@ -77,7 +77,7 @@ export default function SacredCommitmentCard({
 const styles = StyleSheet.create({
   card: { padding: 22, overflow: "hidden", borderColor: COLORS.gold + "3A" },
   compact: { padding: 18 },
-  headingRow: { flexDirection: "row", alignItems: "center", gap: 9, marginBottom: 4 },
+  headingRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 9, marginBottom: 4 },
   headingIcon: {
     width: 30, height: 30, borderRadius: 10, backgroundColor: COLORS.gold + "1E",
     alignItems: "center", justifyContent: "center",
@@ -88,8 +88,9 @@ const styles = StyleSheet.create({
   divider: { borderTopWidth: 1, borderTopColor: "rgba(255,255,255,0.07)" },
   labelRow: { flexDirection: "row", alignItems: "center", gap: 7 },
   label: { color: COLORS.gray1, fontSize: 10.5, fontWeight: "900", letterSpacing: 1.8 },
-  value: { color: COLORS.gold, fontSize: 20, fontWeight: "900", lineHeight: 28, marginTop: 8 },
+  value: { color: COLORS.gold, fontSize: 20, fontWeight: "900", lineHeight: 28, marginTop: 8, textAlign: "center" },
   compactValue: { fontSize: 17, lineHeight: 24 },
+  centerBlock: { alignItems: "center" },
   affirmationBlock: { alignItems: "center" },
   // §7 + §11: affirmation text is ALWAYS centered and set in Lora — a readability-proven,
   // calm serif — with generous 1.5x line height and ≥20sp size.

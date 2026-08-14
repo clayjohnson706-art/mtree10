@@ -117,17 +117,22 @@ export default function Auth() {
               .
             </Text>
           </View>
-          <FilledButton
+          {/* Material-You style Google sign-in — dark tonal container that belongs to the
+              app's design system (no default white SDK button). */}
+          <TouchableOpacity
             testID="google-signin-button"
-            label={signing ? "Signing in..." : "Continue with Google"}
             onPress={handleSignIn}
             disabled={signing || !agreed}
-            style={{
-              backgroundColor: COLORS.white,
-              marginTop: 20,
-              opacity: !agreed ? 0.4 : 1,
-            }}
-          />
+            activeOpacity={0.85}
+            style={[styles.googleBtn, (!agreed || signing) && styles.googleBtnDisabled]}
+          >
+            <View style={styles.googleIconChip}>
+              <Text style={styles.googleG}>G</Text>
+            </View>
+            <Text style={[styles.googleBtnText, (!agreed || signing) && { color: COLORS.gray2 }]}>
+              {signing ? "Signing in..." : "Continue with Google"}
+            </Text>
+          </TouchableOpacity>
           {signing && <ActivityIndicator color={COLORS.gold} style={{ marginTop: 16 }} />}
         </View>
       </SafeAreaView>
@@ -169,4 +174,37 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   blockedBannerText: { color: COLORS.gray1, fontSize: 12.5, flex: 1, lineHeight: 17 },
+  googleBtn: {
+    marginTop: 20,
+    height: 58,
+    borderRadius: 999,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 12,
+    backgroundColor: COLORS.surface2,
+    borderWidth: 1,
+    borderColor: COLORS.gold + "45",
+    shadowColor: COLORS.gold,
+    shadowOpacity: 0.25,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  googleBtnDisabled: {
+    borderColor: "rgba(255,255,255,0.08)",
+    shadowOpacity: 0,
+    elevation: 0,
+    opacity: 0.55,
+  },
+  googleIconChip: {
+    width: 30,
+    height: 30,
+    borderRadius: 999,
+    backgroundColor: COLORS.white,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  googleG: { color: "#4285F4", fontSize: 17, fontWeight: "900" },
+  googleBtnText: { color: COLORS.white, fontSize: 15.5, fontWeight: "800", letterSpacing: 0.3 },
 });

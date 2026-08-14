@@ -1,0 +1,39 @@
+{
+  "summary": "Iteration 3 — center-alignment + alarm redesign + Material-You Google button. Backend: 6/6 pytest PASS (dev-login, /auth/me, /profile PATCH deity+onboarding, POST /manifestations, GET /manifestations/active persistence, POST /manifestations/{id}/notification-response, community/wall FREE, admin/login MTree@Sacred#2026). Frontend live @ 390x844 (dev-token injected on /auth then goto /): §1 ALL 3 rows (Burning Desire, Affirmation, Sacrifice) centered on Home (home-sacred-commitment), Ritual tab (ritual-sacred-commitment), and Notification card (notification-sacred-commitment) — verified via getComputedStyle textAlign='center' on each testID sub-row. manifest-setup 'Seal Your Commitment' summary rows code-verified (summaryRow{alignItems:'center'}, summaryLabel + summaryValue textAlign:'center'). §2 'Chant this in your mind 10 times' pill (ritual-reminder-chant-instruction) present on kind=reminder AND kind=wake AND kind=sleep. §3 CODE-VERIFIED notifications.ts: scheduleStreakReminder → DAILY repeats trigger, STANDARD_CHANNEL, sound:false; rescheduleReminders random → DATE triggers on STANDARD_CHANNEL sound:false avoiding wake/sleep ±10 min windows; scheduleWakeSleepAlarms → DAILY repeats on ALARM_CHANNEL (AndroidImportance.MAX, sound:'default', vibrationPattern strong, lockscreenVisibility:PUBLIC, bypassDnd, sticky:true, autoDismiss:false). Alarm UI: kind=wake shows 'Rise With Intention' + 'HOLD TO STOP' + explanation containing 'alarm keeps ringing until you hold'; kind=sleep shows 'Rest In Sacred Trust' + 'HOLD TO STOP'. expo-audio useAudioPlayer with loop=true + play() on mount and pause() on unmount + on complete — web-guarded (Platform.OS==='web' early return), correct RN-web behavior. §4 AUTH Google button (google-signin-button) computed background = rgb(31,23,69) COLORS.surface2 (dark tonal, NOT white), border rgba(245,197,66,0.27) gold-tinted, border-radius 999 pill, contains white circular G chip + text 'Continue with Google' — VERIFIED. REGRESSION: home renders header + streak-hub-card, tab navigation works. Hold-to-stop 2s Playwright simulation NOT run (documented RN-web Pressable long-press flakiness from iter1); backend notification-response POST validated directly via pytest instead. Console warnings unchanged from iter1/2: shadow* + props.pointerEvents deprecations only.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "global (RN-web)", "issues": [
+        "Pre-existing (iter1+iter2) console warnings still present: '\"shadow*\" style props are deprecated. Use \"boxShadow\".' and 'props.pointerEvents is deprecated. Use style.pointerEvents'. Non-blocking on native — cosmetic on web preview only."
+      ]}
+    ],
+    "react_native_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_align_center_iter3.py",
+    "/app/test_reports/pytest/align_center_iter3.xml"
+  ],
+  "action_items": [
+    "(Carry-over) Migrate RN-web deprecated style props (shadow* → boxShadow, props.pointerEvents → style.pointerEvents) to silence recurring web console warnings.",
+    "Actual alarm audio + push firing MUST be verified on a native build (Expo Go or dev-client) — the web guard makes those paths silent by design. Confirm on device: (a) wake/sleep alarms fire at scheduled DAILY hh:mm on ALARM_CHANNEL with sound, sticky, and lockscreen visibility PUBLIC; (b) the alarm sound LOOPS on /ritual-reminder?kind=wake|sleep and stops ONLY when the hold-to-stop button completes (or the screen unmounts); (c) reminder/streak notifications on STANDARD_CHANNEL are silent (sound:false) and don't loop.",
+    "Optional: expose eventId param through to the delivered notification identifier so dismissDeliveredNotification(eventId) actually targets the correct one on Android (currently /ritual-reminder passes eventId as-is, but for random reminders the scheduled identifier is mtree-reminder-random-{date}-{index} — verify the router deep link supplies the matching id)."
+  ],
+  "critical_code_review_comments": [
+    "SacredCommitmentCard is clean, single-source-of-truth, and its centered treatment is now consistent across Home, Ritual, Notification card, and Success modal. Nice.",
+    "ritual-reminder.tsx correctly guards expo-audio behind Platform.OS !== 'web' — no web crash. Alarm player uses loop=true and pauses on both unmount and complete(): correct 'HOLD TO STOP' semantics.",
+    "notifications.ts: scheduleWakeSleepAlarms + scheduleStreakReminder + rescheduleReminders(random) all use SchedulableTriggerInputTypes.DAILY / DATE properly. STANDARD vs ALARM channels are correctly split by importance + sound. rescheduleReminders in 'random' mode still schedules on a horizonDays window with DATE triggers (not DAILY-random) — this is correct because 'random' means new random times per day, so DAILY repeats can't be used; the horizon (2–14 days) buffers between refreshes.",
+    "auth.tsx Google button: surface2 background + gold-tinted border + white circular G chip is a solid Material-You tonal treatment. FYI: rendering the letter 'G' as a Text with color #4285F4 works but if brand-compliance matters, swap for the official Google G SVG (in-app asset) to avoid trademark ambiguity.",
+    "manifest-setup.tsx is one big single file with an inline styles blob (>7000 chars on one line). Works, but consider extracting the Summary + Step subcomponents and moving StyleSheet.create to its own module for future maintainability."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_align_center_iter3.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "seed_data_creation": "Dev-login users TEST_iter3_<ts>@mtree.dev (backend) and TEST_iter3ui_<ts>@mtree.dev (frontend) with one active manifestation each (goal=money, sacrifice=social_media, cycle=21, reminder_count=5, random, hustle+fasting on, deity_id=6). @mtree.dev accounts are auto-excluded from Community Wall + admin listings per server.py — safe to leave.",
+  "retest_needed": false,
+  "should_main_agent_self_test": true,
+  "context_for_next_testing_agent": "Auth: POST /api/auth/dev-login?email=<uniq>@mtree.dev&name=X → session_token. On /auth run localStorage.setItem('mtree_session_token', JSON.stringify(token)) then goto /. To skip onboarding+journey-intro: PATCH /api/profile {onboarding_done:true, profile_done:true, tour_done:true, journey_intro_seen:true, deity_id:6} then POST /api/manifestations. Backend URL = https://mtree-ui-overhaul.preview.emergentagent.com. /auth/me returns user at root (not under 'user'); admin/login returns {access_token, token_type, expires_in} (NOT 'token'). Pytest xdist is on in /app/backend/pytest.ini — force serial with `-o addopts=''` when a fixture-scoped token is shared across tests. Playwright cannot fire RN-web Pressable onLongPress reliably — verify HOLD button completion on device / Expo Go. expo-audio + expo-notifications firing behavior are web-guarded — code-verified only, need a native build for end-to-end validation.",
+  "rca_of_issue": "N/A — all 4 spec sections behave per requirements. Two assertion errors in the initial pytest run were test-side only (response shape assumption for /auth/me and admin/login) and were fixed in the test file; the underlying endpoints returned correct data."
+}

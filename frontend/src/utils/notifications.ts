@@ -270,9 +270,10 @@ export async function scheduleStreakReminder(time: string, ritualDoneToday = fal
   await cancelStreakReminder();
   if (!await requestNotificationPermissions()) return { scheduled: false, permission: await getNotificationPermissionState() };
   const [hour, minute] = (time || "20:00").split(":").map(Number);
-  const target = new Date(); target.setHours(hour, minute, 0, 0);
-  if (ritualDoneToday || target <= new Date()) target.setDate(target.getDate() + 1);
   try {
+    // DAILY repeating trigger — survives app kills and device restarts (expo-notifications
+    // re-registers repeating schedules after boot), unlike a one-shot DATE trigger that dies
+    // after firing once until the app happens to reschedule it.
     await Notifications.scheduleNotificationAsync({
       identifier: STREAK_REMINDER_ID,
       content: {
@@ -282,7 +283,7 @@ export async function scheduleStreakReminder(time: string, ritualDoneToday = fal
         data: { type: "streak-reminder" },
         ...(Platform.OS === "android" ? { channelId: STANDARD_CHANNEL } : {}),
       },
-      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: target } as any,
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour, minute, repeats: true } as any,
     });
     return { scheduled: true, permission: "granted" };
   } catch { return { scheduled: false, permission: "granted" }; }

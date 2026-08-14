@@ -819,3 +819,11 @@ Original ask: undo half-done changes, deep stunning dark/gold design overhaul, a
 - §10 Everything free: paywall.tsx/subscription.tsx deleted, all premium gates/locks removed from Settings/Wall/Saved; Reminder & Language rows open their real sheets
 - §12 Daily reminder custom time picker verified working
 - Tests: /app/test_reports/iteration_2.json — all pass
+
+---
+## Update — June 2026 (Alignment, Notification Card, Alarms & Login Fixes)
+- §1 Burning Desire + Sacrifice now center-aligned everywhere (SacredCommitmentCard rows + manifest-setup summary) — identical treatment to affirmation
+- §2 "Chant this in your mind 10 times" pill on all notification cards (reminder/wake/sleep kinds)
+- §3 Streak reminder switched to DAILY repeating trigger (survives restarts); random reminders code-verified (avoid alarm windows); wake/sleep alarms: MAX-importance channel + expo-audio LOOPING alarm sound in ritual-reminder screen, stops ONLY on HOLD TO STOP (bundled assets/sounds/alarm.wav; needs native build to hear)
+- §4 Google login button: Material-You dark tonal pill (surface bg, gold border, white G chip) — white background removed
+- expo-audio installed; tests: /app/test_reports/iteration_3.json — all pass
